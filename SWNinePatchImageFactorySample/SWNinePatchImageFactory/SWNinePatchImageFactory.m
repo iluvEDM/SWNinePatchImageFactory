@@ -1,19 +1,14 @@
 //
-//  SWNinePatchImageFactory.m
-//  SWNinePatchImageFactory
+//  KKNinepatch.m
+//  keukey Keyboard
 //
-//  Created by shiami on 7/10/14.
-//  Copyright (c) 2014 TaccoTap. All rights reserved.
+//  Created by 주정한 on 2015. 3. 17..
+//  Copyright (c) 2015년 keukey inc. All rights reserved.
+//
 
-#import "SWNinePatchImageFactory.h"
-#import <math.h>
+#import "KKNinepatch.h"
 
-@interface SWNinePatchImageFactory (Private)
-+ (NSArray*)getRGBAsFromImage:(UIImage*)image atX:(int)xx andY:(int)yy count:(int)count;
-+ (UIImage*)createResizableImageFromNinePatchImage:(UIImage*)ninePatchImage;
-@end
-
-@implementation SWNinePatchImageFactory
+@implementation KKNinepatch
 
 + (NSArray*)getRGBAsFromImage:(UIImage*)image atX:(int)xx andY:(int)yy count:(int)count
 {
@@ -113,12 +108,12 @@
         NSArray* aColor = topBarRgba[i];
         //        NSLog(@"topbar right color: %@,%@,%@,%@", aColor[0], aColor[1], aColor[2], aColor[3]);
         if ([aColor[3] floatValue] == 1) {
-            right = i;
+            right = count -1 -i;
             break;
         }
     }
     NSAssert(right != -1, @"The 9-patch PNG format is not correct.");
-    for (int i = left + 1; i <= right - 1; i++) {
+    for (int i = left + 1; i <= count - right - 1; i++) {
         NSArray* aColor = topBarRgba[i];
         if ([aColor[3] floatValue] < 1) {
             NSAssert(NO, @"The 9-patch PNG format is not support.");
@@ -138,12 +133,12 @@
         NSArray* aColor = leftBarRgba[i];
         //        NSLog(@"leftbar bottom color: %@,%@,%@,%@", aColor[0], aColor[1], aColor[2], aColor[3]);
         if ([aColor[3] floatValue] == 1) {
-            bottom = i;
+            bottom = count -1 - i;
             break;
         }
     }
     NSAssert(bottom != -1, @"The 9-patch PNG format is not correct.");
-    for (int i = top + 1; i <= bottom - 1; i++) {
+    for (int i = top + 1; i <=count-bottom - 1; i++) {
         NSArray* aColor = leftBarRgba[i];
         if ([aColor[3] floatValue] == 0) {
             NSAssert(NO, @"The 9-patch PNG format is not support.");
@@ -151,7 +146,10 @@
     }
     
     UIImage* cropImage = [ninePatchImage crop:CGRectMake(1, 1, ninePatchImage.size.width - 2, ninePatchImage.size.height - 2)];
-    return [cropImage resizableImageWithCapInsets:UIEdgeInsetsMake(top, left, bottom, right)];
+    CGFloat newTop = (top-1)/scl;
+    CGFloat newBottom = (bottom-1)/scl;
+    CGFloat newLeft = (left)/scl;
+    CGFloat newRight = right/scl;
+    return [cropImage resizableImageWithCapInsets:UIEdgeInsetsMake(newTop, newLeft, newBottom, newRight)];
 }
-
 @end
